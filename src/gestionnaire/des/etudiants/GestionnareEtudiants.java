@@ -30,14 +30,19 @@ public class GestionnareEtudiants extends javax.swing.JFrame {
         jTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         jTree.getSelectionModel().addTreeSelectionListener((evt) -> {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) jTree.getLastSelectedPathComponent();
-            if (node != null && node.getUserObject() instanceof Etudiant) {
-                Etudiant e = (Etudiant) node.getUserObject();
-                nom_label.setText(e.getNom());
-                prnom_label.setText(e.getPrenom());
-                classe_label.setText(e.getClasse().getName());
-                email_label.setText(e.getEmail());
-                tel_label.setText(e.getNum_portable());
-                adresse_label.setText(e.getAdresse());
+
+            if (node != null) {
+                if (node.getUserObject() instanceof Etudiant) {
+                    Etudiant e = (Etudiant) node.getUserObject();
+                    nom_label.setText(e.getNom());
+                    prnom_label.setText(e.getPrenom());
+                    classe_label.setText(e.getClasse().getName());
+                    email_label.setText(e.getEmail());
+                    tel_label.setText(e.getNum_portable());
+                    adresse_label.setText(e.getAdresse());
+                } else {
+                    System.out.println("Nœud : " + node.toString());
+                }
             }
         });
     }
@@ -326,16 +331,6 @@ public class GestionnareEtudiants extends javax.swing.JFrame {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
         System.out.println("Button Enregistrer");
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode) jTree.getLastSelectedPathComponent();
-        if (node != null) {
-            if (node.getUserObject() instanceof Etudiant) {
-                Etudiant e = (Etudiant) node.getUserObject();
-                System.out.println("Etudiant{" + "nom=" + e.getNom() + ", prenom=" + e.getPrenom() + ", email=" + e.getEmail()
-                        + ", adresse=" + e.getAdresse() + ", num_portable=" + e.getNum_portable() + ", num_fix=" + e.getNum_fix() + ", niveau=" + e.getNiveau() + ", classe=" + e.getClasse().getName() + '}');
-            } else {
-                System.out.println("Nœud : " + node.toString());
-            }
-        }
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

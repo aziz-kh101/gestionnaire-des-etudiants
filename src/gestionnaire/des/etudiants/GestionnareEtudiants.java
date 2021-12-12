@@ -5,8 +5,16 @@
  */
 package gestionnaire.des.etudiants;
 
+import java.awt.CardLayout;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -20,19 +28,43 @@ import javax.swing.tree.TreeSelectionModel;
 public class GestionnareEtudiants extends javax.swing.JFrame {
 
     DefaultMutableTreeNode FSM;
+    DataBase db;
 
     /**
      * Creates new form GestionnareEtudiants1
      */
-    public GestionnareEtudiants() {
+    public GestionnareEtudiants() throws ClassNotFoundException, SQLException {
         FSM = new DefaultMutableTreeNode("FSM");
+
+        db = new DataBase();
+
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Windows".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
+            System.out.println(e);
+        }
+
         initComponents();
+
         jTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         jTree.getSelectionModel().addTreeSelectionListener((evt) -> {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) jTree.getLastSelectedPathComponent();
 
+            ((DefaultTableModel) jTable1.getModel()).setRowCount(0);
+
+            CardLayout card = (CardLayout) Info.getLayout();
+
+            vider();
+
             if (node != null) {
                 if (node.getUserObject() instanceof Etudiant) {
+                    card.show(Info, "EtudiantInfo");
+
                     Etudiant e = (Etudiant) node.getUserObject();
                     nom_label.setText(e.getNom());
                     prnom_label.setText(e.getPrenom());
@@ -40,10 +72,20 @@ public class GestionnareEtudiants extends javax.swing.JFrame {
                     email_label.setText(e.getEmail());
                     tel_label.setText(e.getNum_portable());
                     adresse_label.setText(e.getAdresse());
-                } else {
-                    System.out.println("Nœud : " + node.toString());
+
+                    noteName.setText(e.getNom() + " " + e.getPrenom());
+                    emailName.setText(e.getEmail());
+
+                    afficheNote();
+
+                } else if (node.getUserObject() instanceof Classe) {
+                    card.show(Info, "ClassInfo");
+
+                    List<Etudiant> l = getEtudiantsByClasse(node);
+                    showEtudiants(l);
                 }
             }
+
         });
     }
 
@@ -56,6 +98,8 @@ public class GestionnareEtudiants extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jTabbedPane2 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
         jpFormulaire = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -76,11 +120,9 @@ public class GestionnareEtudiants extends javax.swing.JFrame {
         niveau = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jpArbreEtInfo = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTree = new javax.swing.JTree();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        Info = new javax.swing.JPanel();
+        EtudiantInfo = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
@@ -93,12 +135,54 @@ public class GestionnareEtudiants extends javax.swing.JFrame {
         email_label = new javax.swing.JLabel();
         tel_label = new javax.swing.JLabel();
         adresse_label = new javax.swing.JLabel();
+        ClassInfo = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTree = new javax.swing.JTree();
+        jPanel6 = new javax.swing.JPanel();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        jLabel24 = new javax.swing.JLabel();
+        jLabel25 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
+        jLabel27 = new javax.swing.JLabel();
+        noteName = new javax.swing.JLabel();
+        emailName = new javax.swing.JLabel();
+        reseau_fileld = new javax.swing.JTextField();
+        securite_fileld = new javax.swing.JTextField();
+        java_fileld = new javax.swing.JTextField();
+        php_fileld = new javax.swing.JTextField();
+        android = new javax.swing.JTextField();
+        sgbd = new javax.swing.JTextField();
+        math = new javax.swing.JTextField();
+        fr = new javax.swing.JTextField();
+        ang = new javax.swing.JTextField();
+        pfe = new javax.swing.JTextField();
+        jPanel7 = new javax.swing.JPanel();
+        jButton5 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
+        jButton7 = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Gestionnaire des etudiant");
         setMinimumSize(new java.awt.Dimension(755, 630));
-        setPreferredSize(new java.awt.Dimension(755, 630));
-        getContentPane().setLayout(new java.awt.BorderLayout(10, 10));
+        setPreferredSize(new java.awt.Dimension(1155, 630));
+
+        jPanel1.setLayout(new java.awt.BorderLayout());
 
         jpFormulaire.setMinimumSize(new java.awt.Dimension(788, 260));
         jpFormulaire.setPreferredSize(new java.awt.Dimension(788, 260));
@@ -124,6 +208,11 @@ public class GestionnareEtudiants extends javax.swing.JFrame {
         classe.setToolTipText("");
 
         niveau.setToolTipText("");
+        niveau.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                niveauActionPerformed(evt);
+            }
+        });
 
         jButton1.setText("annuler");
 
@@ -150,25 +239,25 @@ public class GestionnareEtudiants extends javax.swing.JFrame {
                             .addComponent(jLabel2)
                             .addComponent(jLabel3)
                             .addComponent(jLabel4))
-                        .addGap(85, 85, 85)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 72, Short.MAX_VALUE)
                         .addGroup(jpFormulaireLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(classe, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
+                            .addComponent(classe, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE)
                             .addComponent(num_portable)
                             .addComponent(email)
                             .addComponent(prenom))
-                        .addGap(88, 88, 88)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
                         .addGroup(jpFormulaireLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel9)
                             .addComponent(jLabel8)
                             .addComponent(jLabel7)
                             .addComponent(jLabel6))
-                        .addGap(101, 101, 101)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 88, Short.MAX_VALUE)
                         .addGroup(jpFormulaireLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(niveau, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
+                            .addComponent(niveau, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE)
                             .addComponent(num_fix)
                             .addComponent(adresse)
                             .addComponent(nom))
-                        .addGap(26, 26, 26))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
             .addGroup(jpFormulaireLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -218,12 +307,116 @@ public class GestionnareEtudiants extends javax.swing.JFrame {
                 .addContainerGap(33, Short.MAX_VALUE))
         );
 
-        getContentPane().add(jpFormulaire, java.awt.BorderLayout.PAGE_START);
+        jPanel1.add(jpFormulaire, java.awt.BorderLayout.PAGE_START);
+
+        jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        jPanel3.setLayout(new java.awt.BorderLayout(10, 10));
+
+        Info.setLayout(new java.awt.CardLayout());
+
+        jLabel10.setText("Nom");
+
+        jLabel11.setText("Prenom");
+
+        jLabel12.setText("Classe");
+
+        jLabel13.setText("Email");
+
+        jLabel14.setText("Telephone");
+
+        jLabel15.setText("Adresse");
+
+        javax.swing.GroupLayout EtudiantInfoLayout = new javax.swing.GroupLayout(EtudiantInfo);
+        EtudiantInfo.setLayout(EtudiantInfoLayout);
+        EtudiantInfoLayout.setHorizontalGroup(
+            EtudiantInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(EtudiantInfoLayout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addGroup(EtudiantInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel10)
+                    .addComponent(jLabel11)
+                    .addComponent(jLabel12)
+                    .addComponent(jLabel13)
+                    .addComponent(jLabel14)
+                    .addComponent(jLabel15))
+                .addGap(105, 105, 105)
+                .addGroup(EtudiantInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(adresse_label)
+                    .addComponent(tel_label)
+                    .addComponent(email_label)
+                    .addComponent(classe_label)
+                    .addComponent(prnom_label)
+                    .addComponent(nom_label))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        EtudiantInfoLayout.setVerticalGroup(
+            EtudiantInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(EtudiantInfoLayout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addGroup(EtudiantInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(nom_label))
+                .addGap(18, 18, 18)
+                .addGroup(EtudiantInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11)
+                    .addComponent(prnom_label))
+                .addGap(18, 18, 18)
+                .addGroup(EtudiantInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel12)
+                    .addComponent(classe_label))
+                .addGap(18, 18, 18)
+                .addGroup(EtudiantInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(email_label))
+                .addGap(18, 18, 18)
+                .addGroup(EtudiantInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel14)
+                    .addComponent(tel_label))
+                .addGap(18, 18, 18)
+                .addGroup(EtudiantInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel15)
+                    .addComponent(adresse_label))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        Info.add(EtudiantInfo, "EtudiantInfo");
+
+        ClassInfo.setPreferredSize(new java.awt.Dimension(550, 402));
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "nom", "prenom", "classe", "email", "tel", "adresse"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        ClassInfo.setViewportView(jTable1);
+
+        Info.add(ClassInfo, "ClassInfo");
+
+        jPanel3.add(Info, java.awt.BorderLayout.EAST);
+
+        jScrollPane1.setBorder(null);
+        jScrollPane1.setViewportBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 10));
 
         jTree.setModel(new DefaultTreeModel(FSM));
         jTree.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jTree.setMaximumSize(getMaximumSize());
         jScrollPane1.setViewportView(jTree);
+
+        jPanel3.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
         jButton3.setText("actualiser");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -239,99 +432,252 @@ public class GestionnareEtudiants extends javax.swing.JFrame {
             }
         });
 
-        jLabel10.setText("Nom");
-
-        jLabel11.setText("Prenom");
-
-        jLabel12.setText("Classe");
-
-        jLabel13.setText("Email");
-
-        jLabel14.setText("Telephone");
-
-        jLabel15.setText("Adresse");
-
-        javax.swing.GroupLayout jpArbreEtInfoLayout = new javax.swing.GroupLayout(jpArbreEtInfo);
-        jpArbreEtInfo.setLayout(jpArbreEtInfoLayout);
-        jpArbreEtInfoLayout.setHorizontalGroup(
-            jpArbreEtInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jpArbreEtInfoLayout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jpArbreEtInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jpArbreEtInfoLayout.createSequentialGroup()
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 401, Short.MAX_VALUE))
-                .addGap(66, 66, 66)
-                .addGroup(jpArbreEtInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel11)
-                    .addComponent(jLabel12)
-                    .addComponent(jLabel13)
-                    .addComponent(jLabel14)
-                    .addComponent(jLabel15))
-                .addGap(92, 92, 92)
-                .addGroup(jpArbreEtInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(adresse_label)
-                    .addComponent(tel_label)
-                    .addComponent(email_label)
-                    .addComponent(classe_label)
-                    .addComponent(prnom_label)
-                    .addComponent(nom_label))
-                .addGap(205, 205, 205))
+                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(581, Short.MAX_VALUE))
         );
-        jpArbreEtInfoLayout.setVerticalGroup(
-            jpArbreEtInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jpArbreEtInfoLayout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addGroup(jpArbreEtInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE)
-                    .addGroup(jpArbreEtInfoLayout.createSequentialGroup()
-                        .addGroup(jpArbreEtInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel10)
-                            .addComponent(nom_label))
-                        .addGap(18, 18, 18)
-                        .addGroup(jpArbreEtInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel11)
-                            .addComponent(prnom_label))
-                        .addGap(18, 18, 18)
-                        .addGroup(jpArbreEtInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel12)
-                            .addComponent(classe_label))
-                        .addGap(18, 18, 18)
-                        .addGroup(jpArbreEtInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel13)
-                            .addComponent(email_label))
-                        .addGap(18, 18, 18)
-                        .addGroup(jpArbreEtInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel14)
-                            .addComponent(tel_label))
-                        .addGap(18, 18, 18)
-                        .addGroup(jpArbreEtInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel15)
-                            .addComponent(adresse_label))))
-                .addGap(18, 18, 18)
-                .addGroup(jpArbreEtInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                .addGap(7, 7, 7)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton3)
-                    .addComponent(jButton4))
+                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
-        getContentPane().add(jpArbreEtInfo, java.awt.BorderLayout.CENTER);
+        jPanel3.add(jPanel6, java.awt.BorderLayout.PAGE_END);
+
+        jPanel1.add(jPanel3, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane2.addTab("Etudiants", jPanel1);
+
+        jPanel4.setLayout(new java.awt.BorderLayout());
+
+        jPanel5.setPreferredSize(new java.awt.Dimension(1131, 470));
+        jPanel5.setVerifyInputWhenFocusTarget(false);
+
+        jLabel16.setText("Nom & Prenom");
+
+        jLabel17.setText("Email");
+
+        jLabel18.setText("Securite");
+
+        jLabel19.setText("Reseau");
+
+        jLabel20.setText("Java");
+
+        jLabel21.setText("PHP");
+
+        jLabel22.setText("Android");
+
+        jLabel23.setText("SGBD");
+
+        jLabel24.setText("Math");
+
+        jLabel25.setText("Francais");
+
+        jLabel26.setText("Anglais");
+
+        jLabel27.setText("PFE");
+
+        noteName.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+
+        emailName.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel16)
+                            .addComponent(jLabel17)
+                            .addComponent(jLabel18))
+                        .addGap(104, 104, 104)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(emailName)
+                            .addComponent(securite_fileld, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(noteName)))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel19)
+                            .addComponent(jLabel20)
+                            .addComponent(jLabel21)
+                            .addComponent(jLabel22)
+                            .addComponent(jLabel23)
+                            .addComponent(jLabel24)
+                            .addComponent(jLabel25)
+                            .addComponent(jLabel26)
+                            .addComponent(jLabel27))
+                        .addGap(143, 143, 143)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(pfe, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ang, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(fr, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(math, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(android, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(php_fileld, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(java_fileld, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(reseau_fileld, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(sgbd, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(690, Short.MAX_VALUE))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel16)
+                    .addComponent(noteName))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel17)
+                    .addComponent(emailName))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel18)
+                    .addComponent(securite_fileld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel19)
+                    .addComponent(reseau_fileld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel20)
+                    .addComponent(java_fileld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel21)
+                    .addComponent(php_fileld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel22)
+                    .addComponent(android, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel23)
+                    .addComponent(sgbd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel24)
+                    .addComponent(math, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel25)
+                    .addComponent(fr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel26)
+                    .addComponent(ang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel27)
+                    .addComponent(pfe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel4.add(jPanel5, java.awt.BorderLayout.NORTH);
+
+        jPanel7.setPreferredSize(new java.awt.Dimension(1131, 60));
+
+        jButton5.setText("Enregistrer");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        jButton6.setText("Annuler");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
+        jButton7.setText("Vider");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(472, Short.MAX_VALUE))
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton5)
+                    .addComponent(jButton6)
+                    .addComponent(jButton7))
+                .addGap(21, 21, 21))
+        );
+
+        jPanel4.add(jPanel7, java.awt.BorderLayout.SOUTH);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE)
+        );
+
+        jTabbedPane2.addTab("Notes", jPanel2);
+
+        jMenu1.setText("File");
+
+        jMenuItem1.setText("Quit");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem1);
+
+        jMenuBar1.add(jMenu1);
+
+        setJMenuBar(jMenuBar1);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1136, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jTabbedPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE)
+        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-        System.out.println("Button Actualiser");
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
-        System.out.println("Button Enregistrer");
-    }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
@@ -341,11 +687,47 @@ public class GestionnareEtudiants extends javax.swing.JFrame {
 
             Etudiant e = new Etudiant(nom.getText(), prenom.getText(), email.getText(), adresse.getText(), num_portable.getText(), num_fix.getText(), niveau.getText(), c);
             addEtudiant(e);
+            
+            vidierForm();
         } else {
             JOptionPane jo = new JOptionPane();
             jo.showMessageDialog(this, "you need to complete les champs obligatoire", "erreur", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        System.out.println("Button Enregistrer");
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        System.out.println("Button Actualiser");
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void niveauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_niveauActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_niveauActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // TODO add your handling code here:
+        System.exit(0);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        // TODO add your handling code here:
+        afficheNote();
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+        saveNote();
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        // TODO add your handling code here:
+        vider();
+    }//GEN-LAST:event_jButton7ActionPerformed
     boolean verif_champs() {
         return !nom.getText().isEmpty() && !prenom.getText().isEmpty() && !adresse.getText().isEmpty() && !email.getText().isEmpty() && !num_portable.getText().isEmpty()
                 && !classe.getText().isEmpty() && !niveau.getText().isEmpty();
@@ -410,24 +792,42 @@ public class GestionnareEtudiants extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
-                GestionnareEtudiants ge = new GestionnareEtudiants();
-                ge.setVisible(true);
+                GestionnareEtudiants ge;
+                try {
+                    ge = new GestionnareEtudiants();
+                    ge.setVisible(true);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(GestionnareEtudiants.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (SQLException ex) {
+                    Logger.getLogger(GestionnareEtudiants.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane ClassInfo;
+    private javax.swing.JPanel EtudiantInfo;
+    private javax.swing.JPanel Info;
     private javax.swing.JTextField adresse;
     private javax.swing.JLabel adresse_label;
+    private javax.swing.JTextField android;
+    private javax.swing.JTextField ang;
     private javax.swing.JTextField classe;
     private javax.swing.JLabel classe_label;
     private javax.swing.JTextField email;
+    private javax.swing.JLabel emailName;
     private javax.swing.JLabel email_label;
+    private javax.swing.JTextField fr;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -435,7 +835,19 @@ public class GestionnareEtudiants extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -443,17 +855,116 @@ public class GestionnareEtudiants extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTabbedPane jTabbedPane2;
+    private javax.swing.JTable jTable1;
     private javax.swing.JTree jTree;
-    private javax.swing.JPanel jpArbreEtInfo;
+    private javax.swing.JTextField java_fileld;
     private javax.swing.JPanel jpFormulaire;
+    private javax.swing.JTextField math;
     private javax.swing.JTextField niveau;
     private javax.swing.JTextField nom;
     private javax.swing.JLabel nom_label;
+    private javax.swing.JLabel noteName;
     private javax.swing.JTextField num_fix;
     private javax.swing.JTextField num_portable;
+    private javax.swing.JTextField pfe;
+    private javax.swing.JTextField php_fileld;
     private javax.swing.JTextField prenom;
     private javax.swing.JLabel prnom_label;
+    private javax.swing.JTextField reseau_fileld;
+    private javax.swing.JTextField securite_fileld;
+    private javax.swing.JTextField sgbd;
     private javax.swing.JLabel tel_label;
     // End of variables declaration//GEN-END:variables
+
+    private List<Etudiant> getEtudiantsByClasse(DefaultMutableTreeNode root) {
+        List<Etudiant> l = new ArrayList<>();
+        for (int i = 0; i < root.getChildCount(); i++) {
+            Etudiant e = (Etudiant) ((DefaultMutableTreeNode) root.getChildAt(i)).getUserObject();
+            l.add(e);
+        }
+        return l;
+    }
+
+    private void showEtudiants(List<Etudiant> l) {
+        l.forEach((Etudiant e) -> {
+            String arr[] = {e.getNom(), e.getPrenom(), e.getClasse().getName(), e.getEmail(), e.getNum_portable(), e.getEmail()};
+            ((DefaultTableModel) jTable1.getModel()).addRow(arr);
+        });
+    }
+
+    private void afficheNote() {
+        if (!emailName.getText().isEmpty()) {
+            Note n = db.GetNote(emailName.getText());
+            if (n != null) {
+                securite_fileld.setText(n.getSecurite());
+                reseau_fileld.setText(n.getReseau());
+                java_fileld.setText(n.getJava());
+                php_fileld.setText(n.getJava());
+                android.setText(n.getAndroid());
+                sgbd.setText(n.getSgbd());
+                math.setText(n.getMath());
+                fr.setText(n.getFrancais());
+                ang.setText(n.getAnglais());
+                pfe.setText(n.getPfe());
+            }
+        }
+    }
+
+    private void saveNote() {
+        if (!emailName.getText().isEmpty()) {
+            Note n = new Note();
+            n.setFull_name(noteName.getText());
+            n.setEmail(emailName.getText());
+            n.setSecurite(securite_fileld.getText());
+            n.setReseau(reseau_fileld.getText());
+            n.setJava(java_fileld.getText());
+            n.setPhp(php_fileld.getText());
+            n.setAndroid(android.getText());
+            n.setSgbd(sgbd.getText());
+            n.setMath(math.getText());
+            n.setFrancais(fr.getText());
+            n.setAnglais(ang.getText());
+            n.setPfe(pfe.getText());
+            db.SaveNote(n);
+        }
+
+    }
+
+    private void vider() {
+        noteName.setText("");
+        emailName.setText("");
+        securite_fileld.setText("");
+        reseau_fileld.setText("");
+        java_fileld.setText("");
+        php_fileld.setText("");
+        android.setText("");
+        sgbd.setText("");
+        math.setText("");
+        fr.setText("");
+        ang.setText("");
+        pfe.setText("");
+    }
+
+    private void vidierForm() {
+        nom.setText("");
+        prenom.setText("");
+        email.setText("");
+        adresse.setText("");
+        num_portable.setText("");
+        num_fix.setText("");
+        niveau.setText("");
+        classe.setText("");
+    }
 }

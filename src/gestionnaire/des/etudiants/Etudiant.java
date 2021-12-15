@@ -5,11 +5,13 @@
  */
 package gestionnaire.des.etudiants;
 
+import java.io.Serializable;
+
 /**
  *
  * @author aziz
  */
-public class Etudiant {
+public class Etudiant implements Serializable{
     private String nom;
     private String prenom;
     private String email;

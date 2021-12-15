@@ -6,6 +6,12 @@
 package gestionnaire.des.etudiants;
 
 import java.awt.CardLayout;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +24,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -698,11 +705,31 @@ public class GestionnareEtudiants extends javax.swing.JFrame {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
         System.out.println("Button Enregistrer");
+        TreeModel tm =  jTree.getModel();
+        try {
+            FileOutputStream os = new FileOutputStream("jtree data.dat");
+            ObjectOutputStream out = new ObjectOutputStream(os);
+            out.writeObject(tm);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(GestionnareEtudiants.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
         System.out.println("Button Actualiser");
+        try {
+            FileInputStream is = new FileInputStream("jtree data.dat");
+            ObjectInputStream in = new ObjectInputStream(is);
+            TreeModel tm = (TreeModel) in.readObject();
+            jTree.setModel(tm);
+            expandAllNodes(jTree, 0, jTree.getRowCount());
+            
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(GestionnareEtudiants.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void niveauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_niveauActionPerformed
